@@ -1,11 +1,8 @@
 RewriteEngine on  
-
-
-RewriteCond %{REQUEST_FILENAME} !-s
-RewriteCond %{REQUEST_FILENAME} !-l
+RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-RewriteRule ^(.+)/(.+)/(.+)$ index.php?controller=$1&action=$2&id=$3
-RewriteRule about$ index.php?controller=Home&action=about
+RewriteRule ^([^/]+)/([^/]+)/?$ index.php?controller=$1&action=$2 [NC]
+RewriteRule ^([^/]+)/([^/]+)/([^/]+)/?$ index.php?controller=$1&action=$2&id=$3 [NC]
 
 

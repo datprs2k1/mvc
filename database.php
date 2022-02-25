@@ -7,6 +7,10 @@ class Database extends PDO
         $connect = "mysql:host=localhost;dbname=app;charset=UTF8";
         $user = "root";
         $pass = "";
-        parent::__construct($connect, $user, $pass);
+        try {
+            parent::__construct($connect, $user, $pass);
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+        }
     }
 }

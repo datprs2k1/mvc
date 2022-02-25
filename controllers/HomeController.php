@@ -21,4 +21,9 @@ class HomeController extends BaseController
     {
         echo 'Hello from the about action in the HomeController';
     }
+
+    public function error()
+    {
+        echo 'Error 404';
+    }
 }
