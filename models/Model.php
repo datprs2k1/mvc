@@ -4,6 +4,12 @@ class Model extends Database
 {
     protected $db = [];
     protected $table;
+    protected $selectColumn = '*';
+    protected $where = '';
+    protected $operators = '';
+    protected $order = '';
+    protected $limit = '';
+    protected $innerJoin = '';
 
 
     public function __construct()
@@ -11,110 +17,143 @@ class Model extends Database
         $this->db = new Database();
     }
 
-    public function get($select = ['*'], $where = [], $orderby = [], $limit = 10)
-    {
-        $sql = "SELECT ";
-
-        if (is_array($select)) {
-            $sql .= implode(', ', $select);
-        } else {
-            $sql .= $select;
-        }
-
-        $sql .= " FROM " . $this->table;
-
-        if (is_array($where) && count($where) > 0) {
-            $sql .= " WHERE ";
-            foreach ($where as $key => $value) {
-                $sql .= $key . " = ";
-                if (is_int($value)) {
-                    $sql .= $value;
-                } else {
-                    $sql .= "'" . $value . "'";
-                }
-                $sql .= " AND ";
-            }
-            $sql = rtrim($sql, " AND ");
-        }
-
-        if (is_array($orderby) && count($orderby) > 0) {
-            $sql .= " ORDER BY ";
-            foreach ($orderby as $key => $value) {
-                $sql .= $key . " " . $value . ", ";
-            }
-            $sql = rtrim($sql, ", ");
-        }
-
-        $sql .= " LIMIT " . $limit;
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $result;
-    }
-
-
-    public function findbyID($id)
-    {
-        $sql = "SELECT * FROM " . $this->table . " WHERE id = " . $id;
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result;
-    }
-
     public function insert($data)
     {
-        $sql = "INSERT INTO " . $this->table . " (";
-        $sql .= implode(', ', array_keys($data));
-        $sql .= ") VALUES ('";
-        $sql .= implode("', '", array_values($data));
-        $sql .= "')";
+        $columns = implode(', ', array_keys($data));
+        $values = implode(', ', array_map(function ($value) {
+            return "'" . $value . "'";
+        }, array_values($data)));
+
+        $sql = "INSERT INTO {$this->table} ({$columns}) VALUES ({$values})";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
     }
 
-    public function update($data, $where)
+    public function delete($id)
     {
-        $sql = "UPDATE " . $this->table . " SET ";
-        $i = 0;
+        $sql = "DELETE FROM {$this->table} WHERE id = {$id}";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+    }
+
+    public function update($data)
+    {
+        $set = [];
         foreach ($data as $key => $value) {
-            if ($i > 0) {
-                $sql .= ", ";
-            }
-            $sql .= $key . " = '" . $value . "'";
-            $i++;
+            $set[] = "{$key} = '{$value}'";
         }
 
-        $sql .= " WHERE ";
-        $i = 0;
-        foreach ($where as $key => $value) {
-            if ($i > 0) {
-                $sql .= " AND ";
-            }
-            $sql .= $key . " = '" . $value . "'";
-            $i++;
+        $set = implode(', ', $set);
+
+        $sql = "UPDATE {$this->table} SET {$set}";
+
+        if ($this->where) {
+            $sql .= " WHERE {$this->where}";
         }
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
     }
 
-    public function delete($where)
+    public function get()
     {
-        $sql = "DELETE FROM " . $this->table . " WHERE ";
-        $i = 0;
-        foreach ($where as $key => $value) {
-            if ($i > 0) {
-                $sql .= " AND ";
-            }
-            $sql .= $key . " = '" . $value . "'";
-            $i++;
-        }
-
+        $sql = "SELECT {$this->selectColumn} FROM {$this->table} {$this->where} {$this->order} {$this->limit}";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $this->resetQuery();
+        return $result;
+    }
+
+    public function first()
+    {
+        $this->limit = "LIMIT 1";
+        $result = $this->get();
+        return $result[0];
+    }
+
+    public function find($id)
+    {
+        $this->where = "WHERE id = {$id}";
+        $result = $this->get();
+        return $result[0];
+    }
+
+    public function join($table, $on)
+    {
+        $this->innerJoin = "INNER JOIN {$table} ON {$on}";
+        return $this;
+    }
+
+    public function where($column, $operator, $value)
+    {
+        if (!empty($this->where)) {
+            $this->where .= ' AND ';
+        } else {
+            $this->where .= ' WHERE ';
+        }
+
+        $this->where .= $column . ' ' . $operator . ' ' . $value;
+        return $this;
+    }
+
+    public function whereLike($column, $value)
+    {
+        if (!empty($this->where)) {
+            $this->where .= ' AND ';
+        } else {
+            $this->where .= ' WHERE ';
+        }
+
+        $this->where .= $column . ' LIKE "%' . $value . '%"';
+        return $this;
+    }
+
+    public function orWhere($column, $operator, $value)
+    {
+        if (!empty($this->where)) {
+            $this->where .= ' OR ';
+        } else {
+            $this->where .= ' WHERE ';
+        }
+
+        $this->where .= $column . ' ' . $operator . ' ' . $value;
+        return $this;
+    }
+
+    public function limit($limit = 10, $offset = 0)
+    {
+        $this->limit = " LIMIT {$offset}, {$limit}";
+        return $this;
+    }
+
+    public function orderBy($column, $order)
+    {
+        if (!empty($this->order)) {
+            $this->order .= ', ';
+        } else {
+            $this->order .= ' ORDER BY ';
+        }
+
+        $this->order .= $column . ' ' . $order;
+        return $this;
+    }
+
+    public function select($column)
+    {
+        $this->selectColumn = $column;
+        return $this;
+    }
+
+    public function resetQuery()
+    {
+        $this->selectColumn = '*';
+        $this->where = '';
+        $this->operators = '';
+        $this->order = '';
+        $this->limit = '';
+        $this->innerJoin = '';
     }
 }
