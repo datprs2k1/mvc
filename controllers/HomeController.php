@@ -9,6 +9,7 @@ class HomeController extends BaseController
     {
         $data = [
             'message' => 'This is homepage',
+            'title' => 'Homepage',
         ];
 
         $this->view('home.index', $data);
