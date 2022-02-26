@@ -3,16 +3,13 @@
 class HomeController extends BaseController
 {
 
-    private $userModel;
 
-    public function __construct()
-    {
-        $this->userModel = $this->model('UserModel');
-    }
 
     public function index()
     {
-        $data['user'] = $this->userModel->get(['id', 'username'], ['id' => '1']);
+        $data = [
+            'message' => 'This is homepage',
+        ];
 
         $this->view('home.index', $data);
     }

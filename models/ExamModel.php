@@ -5,6 +5,6 @@ class UserModel extends Model
     public function __construct()
     {
         parent::__construct();
-        $this->table = 'users';
+        $this->table = 'table_name';
     }
 }

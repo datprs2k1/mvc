@@ -1,3 +1,1 @@
-<?php
-
-var_dump($user);
+<h1><?= $message ?></h1>
