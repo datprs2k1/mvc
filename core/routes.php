@@ -16,7 +16,7 @@ $controller_name = $controller . 'Controller';
 $controller = new $controller_name();
 
 if (isset($id)) {
-    $controller->{$action}($id);
+    $controller->{$action}($param);
 } else {
     $controller->{$action}();
 }

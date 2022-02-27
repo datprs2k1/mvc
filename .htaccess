@@ -2,7 +2,6 @@ RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-RewriteRule ^([^/]+)/([^/]+)/?$ index.php?controller=$1&action=$2 [NC]
-RewriteRule ^([^/]+)/([^/]+)/([^/]+)/?$ index.php?controller=$1&action=$2&id=$3 [NC]
+RewriteRule ^(.+)$ index.php?url=$1
 
 

@@ -1,11 +1,16 @@
 <?php
 
-if (isset($_GET['controller'])) {
-    $controller = $_GET['controller'];
-    if (isset($_GET['action'])) {
-        $action = $_GET['action'];
-        if (isset($_GET['id'])) {
-            $id = $_GET['id'];
+
+$url = isset($_GET['url']) ? $_GET['url'] : '';
+$url = rtrim($url, '/');
+$url = explode('/', $url);
+
+if (!empty($url[0])) {
+    $controller = ucfirst($url[0]);
+    if (!empty($url[1])) {
+        $action = $url[1];
+        if (!empty($url[2])) {
+            $param = $url[2];
         }
     } else {
         $action = 'index';
