@@ -5,6 +5,7 @@ class HomeController extends BaseController
 
     public function index()
     {
+
         $data = [
             'message' => 'This is homepage',
             'title' => 'Homepage',
