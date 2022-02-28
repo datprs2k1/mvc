@@ -16,10 +16,10 @@ class Request
     {
         return self::getMethod() === 'GET';
     }
-    public function all()
+    public static function all()
     {
         $dataFiels = [];
-        if ($this->isGet()) {
+        if (self::isGet()) {
             if (isset($_GET)) {
                 foreach ($_GET as $key => $value) {
                     if (is_array($value)) {
@@ -31,7 +31,7 @@ class Request
             }
         }
 
-        if ($this->isPost()) {
+        if (self::isPost()) {
             if (isset($_POST)) {
                 foreach ($_POST as $key => $value) {
                     if (is_array($value)) {
