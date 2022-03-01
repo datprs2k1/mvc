@@ -14,9 +14,9 @@ class HomeController extends BaseController
         $this->view('home.index', $data);
     }
 
-    public function about()
+    public function about($id)
     {
-        echo 'Hello from the about action in the HomeController';
+        echo 'Hello ' . $id . ' from the about action in the HomeController';
     }
 
     public function error()
