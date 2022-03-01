@@ -4,7 +4,7 @@ class Routes
 {
 
     private $routes = [
-        'a/(.+)' => 'home/about/$1'
+        'a/(.+)' => 'home/about/$1',
     ];
 
     private $controllers = [
@@ -19,7 +19,7 @@ class Routes
     public function getUrl()
     {
         $url = isset($_GET['url']) ? $_GET['url'] : '';
-        $url = trim($url, '/');
+        $url = rtrim($url, '/');
         return $url;
     }
 
