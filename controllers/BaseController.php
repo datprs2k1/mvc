@@ -6,8 +6,6 @@ class BaseController
 
     public function view($file, $data = [])
     {
-        require_once('helpers/function.php');
-
         $view_file = $this->view_folder . '/' . str_replace('.', '/', $file) . '.php';
 
         if (file_exists($view_file)) {
