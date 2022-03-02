@@ -6,7 +6,11 @@ class Session
         if (!empty($value)) {
             $_SESSION[$key] = $value;
         } else {
-            return $_SESSION[$key];
+            if (isset($_SESSION[$key])) {
+                return $_SESSION[$key];
+            } else {
+                return false;
+            }
         }
     }
 
@@ -17,5 +21,16 @@ class Session
         } else {
             unset($_SESSION);
         }
+    }
+
+    public static function flash($key, $value = '')
+    {
+        $data = self::data($key, $value);
+
+        if (empty($value)) {
+            self::delete($key);
+        }
+
+        return $data;
     }
 }

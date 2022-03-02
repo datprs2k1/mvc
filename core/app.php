@@ -15,8 +15,8 @@ class App
 
     public function getUrl()
     {
-        $url = isset($_GET['url']) ? $_GET['url'] : '';
-        $url = rtrim($url, '/');
+        $url = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '/';
+        $url = trim($url, '/');
         return $url;
     }
 

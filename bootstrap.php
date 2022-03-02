@@ -6,6 +6,8 @@ require_once('models/Model.php');
 
 require_once('core/request.php');
 
+require_once('core/response.php');
+
 require_once('core/session.php');
 
 require_once('controllers/BaseController.php');
