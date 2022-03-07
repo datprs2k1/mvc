@@ -1,6 +1,6 @@
 <?php
 
-class ExamModel extends Model
+class Exam extends Model
 {
     public function __construct()
     {
